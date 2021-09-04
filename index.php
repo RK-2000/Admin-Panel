@@ -18,6 +18,8 @@ if (!$_SESSION['authenticated']){
     unset($_SESSION['authenticated']);
     unset($_SESSION['email']);
     unset($_SESSION['password']);
+    unset($_SESSION['name']);
+    unset($_SESSION['id']);
     header('Location:login.php');
     }
  // Get Basic details   
@@ -27,6 +29,7 @@ if (!$_SESSION['authenticated']){
     $query = mysqli_query($con,$q) or trigger_error(mysqli_error($con));
     $result = mysqli_fetch_assoc($query);
     $name = $result['name'];
+    $_SESSION['name'] = $name;
     $_SESSION['id'] = $result['id'];
 
 // Delete User permanently

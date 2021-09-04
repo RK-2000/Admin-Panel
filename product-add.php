@@ -141,7 +141,7 @@ if(isset($_POST['submit'])){
                         <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image">
                     </div>
                     <div class="info">
-                        <a href="#" class="d-block">Alexander Pierce</a>
+                        <a href="#" class="d-block"><?php echo $_SESSION['name'];?></a>
                     </div>
                 </div>
 
@@ -215,7 +215,7 @@ if(isset($_POST['submit'])){
                         </div>
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
-                                <li class="breadcrumb-item"><a href="#">Home</a></li>
+                                <li class="breadcrumb-item"><a href="index.php">Home</a></li>
                                 <li class="breadcrumb-item active">Product Add</li>
                             </ol>
                         </div>
@@ -253,7 +253,8 @@ if(isset($_POST['submit'])){
                                     <div class="form-group">
                                         <label for="inputProjectLeader">Cost</label>
                                         <input type="number" id="inputCost" class="form-control" name="product-cost"
-                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)" required>
+                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)" min=0
+                                            oninvalid="setCustomValidation('Cost cannot be negetive')" required>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->

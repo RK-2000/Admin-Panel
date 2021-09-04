@@ -34,6 +34,7 @@ $result = mysqli_query($con,"select * from product where id='$id' ORDER BY produ
 if(isset($_POST['delete'])){
   $product_id = $_POST['id'];
   mysqli_query($con,"delete from product where product_id = '$product_id';");
+  $_SESSION['message'] = "Product deleted";
   header('location:gallery.php');
 }
 
@@ -204,75 +205,46 @@ if(isset($_POST['delete'])){
                                 <div class="card-header">
                                     <h4 class="card-title">Manage your products</h4>
                                 </div>
-                                <div class="card-body">
 
+                                <div class="card-body">
                                     <div>
                                         <div class="filter-container p-0 row">
-                                            <div class="row row-cols-1 row-cols-md-3 g-4">
+                                            <div class="card-columns">
                                                 <?php while($row = mysqli_fetch_array($result)){
                                             ?>
+                                                <div class="card shadow-lg mx-1 " style="width: 18rem;">
+                                                    <img src="<?php echo $row['image'] ?>" class="card-img-top"
+                                                        alt="Product image">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title"><?php echo $row['product_name'] ?>
+                                                        </h5>
+                                                        <p class="card-text"><?php echo $row['product_desc'] ?>
+                                                        </p>
+                                                    </div>
+                                                    <ul class="list-group list-group-flush">
+                                                        <li class="list-group-item">MRP : &#8377;
+                                                            <?php echo $row['product_cost'] ?></li>
+                                                    </ul>
 
-                                                <div class="col">
-                                                    <div class="card shadow-lg " style="width: 18rem;">
-                                                        <img src="<?php echo $row['image'] ?>" class="card-img-top"
-                                                            alt="Product image">
-                                                        <div class="card-body">
-                                                            <h5 class="card-title"><?php echo $row['product_name'] ?>
-                                                            </h5>
-                                                            <p class="card-text"><?php echo $row['product_desc'] ?>
-                                                            </p>
-                                                        </div>
-                                                        <ul class="list-group list-group-flush">
-                                                            <li class="list-group-item">MRP : &#8377;
-                                                                <?php echo $row['product_cost'] ?></li>
-                                                        </ul>
-
-                                                        <!-- Delete Model -->
-                                                        <div class="modal fade" id="deleteModal" tabindex="-1"
-                                                            role="dialog" aria-labelledby="deleteModalLabel"
-                                                            aria-hidden="true">
-                                                            <div class="modal-dialog" role="document">
-                                                                <div class="modal-content">
-                                                                    <div class="modal-header">
-                                                                        <h5 class="modal-title" id="exampleModalLabel">
-                                                                            Delete Product</h5>
-                                                                        <button type="button" class="close"
-                                                                            data-dismiss="modal" aria-label="Close">
-                                                                            <span aria-hidden="true">&times;</span>
-                                                                        </button>
-                                                                    </div>
-                                                                    <div class="modal-body">
-                                                                        You are going to delete this product from
-                                                                        database
-                                                                    </div>
-                                                                    <div class="modal-footer">
-                                                                        <button type="button" class="btn btn-secondary"
-                                                                            data-dismiss="modal">Close</button>
-                                                                        <form method="POST">
-                                                                            <input type="hidden" name="id"
-                                                                                value=<?php echo $row['product_id'];?>>
-                                                                            <button type="submit" class="btn btn-danger"
-                                                                                name="delete">Delete</button>
-                                                                        </form>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                    <form method="POST">
+                                                        <input type="hidden" name="id"
+                                                            value="<?php echo $row['product_id']; ?>">
                                                         <div class=" card-body">
                                                             <button class="card-link btn btn-warning">Update</button>
-                                                            <button class="card-link btn btn-danger" data-toggle="modal"
-                                                                data-target="#deleteModal">Delete</button>
-                                                        </div>
-                                                    </div>
+                                                            <button type="submit" class="card-link btn btn-danger"
+                                                                name="delete">Delete</button>
+                                                    </form>
                                                 </div>
-                                                <?php } ?>
                                             </div>
 
+                                            <?php } ?>
                                         </div>
+
                                     </div>
                                 </div>
                             </div>
-                        </div><!-- /.container-fluid -->
+                        </div>
+                    </div><!-- /.container-fluid -->
             </section>
             <!-- /.content -->
         </div>

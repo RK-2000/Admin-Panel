@@ -3,13 +3,13 @@ session_start();
 include 'conn.php';
 
 //Print Message
-if ($_SESSION['message']){
+if (isset($_SESSION['message'])){
   echo $_SESSION['message'];
   unset($_SESSION['message']);
 }
 
 //Authentication
-if (!$_SESSION['authenticated']){
+if (!isset($_SESSION['authenticated'])){
   header('Location:login.php');
 }
 
@@ -25,6 +25,19 @@ if (!$_SESSION['authenticated']){
 $email = $_SESSION['email'];
 $password = $_SESSION['password'];
 
+if(isset($_GET['product_id'])){
+$product_id = $_GET['product_id'];
+$product = mysqli_fetch_assoc(mysqli_query($con,"select * from product where product_id = '$product_id';"));
+mysqli_fetch_assoc(mysqli_query($con,"delete * from product where product_id = '$product_id';"));
+
+$product_name=$product['product_name'];
+$product_desc=$product['product_desc'];
+$product_cost=$product['product_cost'];
+$image=$product['image'];
+echo '<script type="text/javascript">
+preview_image()e;
+</script>';
+}
 
 if (isset($_POST['delete'])){
   $q="delete from user where email='$email' and password='$password';";
@@ -242,18 +255,18 @@ if(isset($_POST['submit'])){
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="inputName">Project Name</label>
-                                        <input type="text" id="inputName" class="form-control" name="product-name"
+                                        <input <?php if(isset($product_name)){?> value="<?php echo $product_name;  ?>" <?php } ?> type="text" id="inputName" class="form-control" name="product-name"
                                             required>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputDescription">Project Description</label>
                                         <textarea id="inputDescription" class="form-control" rows="4"
-                                            name="product-desc" required></textarea>
+                                            name="product-desc" required><?php if(isset($product_desc)){ echo $product_desc; } ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputProjectLeader">Cost</label>
                                         <input type="number" id="inputCost" class="form-control" name="product-cost"
-                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)" min=0
+                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)" <?php if(isset($product_cost)){?> value="<?php echo $product_cost;  ?>" <?php } ?> min=1
                                             oninvalid="setCustomValidation('Cost cannot be negetive')" required>
                                     </div>
                                 </div>
@@ -274,8 +287,8 @@ if(isset($_POST['submit'])){
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group" id="x">
-                                        <input type="file" name="img" id="uploadFile" class="form-control"
-                                            onchange="preview_image();" multiple required>
+                                        <input type="file" <?php if(isset($image)){?> value="<?php echo $image;  ?>" onload="preview_image()" <?php } ?>  name="img" id="uploadFile" class="form-control"
+                                            onchange="preview_image();"  multiple required>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->

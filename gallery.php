@@ -4,7 +4,7 @@ session_start();
 include 'conn.php';
 
 //Print Message
-if ($_SESSION['message']){
+if (isset($_SESSION['message'])){
   echo $_SESSION['message'];
   unset($_SESSION['message']);
 }
@@ -230,7 +230,7 @@ if(isset($_POST['delete'])){
                                                         <input type="hidden" name="id"
                                                             value="<?php echo $row['product_id']; ?>">
                                                         <div class=" card-body">
-                                                            <button class="card-link btn btn-warning">Update</button>
+                                                            <a class="card-link btn btn-warning" href="product-add.php?product_id=<?php echo $row['product_id']; ?>">Update</a>
                                                             <button type="submit" class="card-link btn btn-danger"
                                                                 name="delete">Delete</button>
                                                     </form>

@@ -63,7 +63,20 @@ if(isset($_POST['delete'])){
     <!-- CSS only -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
-
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous">
+    </script>
+    <style>
+    .mySlides {
+        display: none;
+    }
+    </style>
 
 
 </head>
@@ -176,6 +189,15 @@ if(isset($_POST['delete'])){
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="compose" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>
+                                    MailBox
+                                    <span class="right badge badge-danger">New</span>
+                                </p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -211,69 +233,24 @@ if(isset($_POST['delete'])){
                                 <div class="card-header">
                                     <h4 class="card-title">Manage your products</h4>
                                 </div>
-                                <!-- start -->
-                                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner">
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-control-prev" type="button"
-                                        data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button"
-                                        data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
-                                </div>
-                                <!-- start -->
+
                                 <div class="card-body">
                                     <div>
                                         <div class="filter-container p-0 row">
                                             <div class="card-columns">
                                                 <?php while($row = mysqli_fetch_array($result)){
-                                                ?>
+                                            ?>
                                                 <div class="card shadow-lg mx-1 " style="width: 18rem;">
-                                                    <div class="card-body">
-                                                        <div id="carouselExampleInterval" class="carousel slide"
-                                                            data-bs-ride="carousel">
-                                                            <div class="carousel-inner">
-                                                                <?php $product_id = $row['product_id']; 
+                                                    <?php $product_id = $row['product_id']; 
                                                             $q = "select * from images where product_id='$product_id'";
                                                             $images = mysqli_query($con,$q) or trigger_error(mysqli_error($con));
                                                                 while($image = mysqli_fetch_array($images)){
                                                             ?>
-                                                                <div class="carousel-item active"
-                                                                    data-bs-interval="10000">
-                                                                    <img src="<?php echo $image['url']; ?>"
-                                                                        class="d-block w-100 card-img-top" alt="...">
-                                                                </div>
-                                                                <?php } ?>
-                                                            </div>
-                                                            <button class="carousel-control-prev" type="button"
-                                                                data-bs-target="#carouselExampleInterval"
-                                                                data-bs-slide="prev">
-                                                                <span class="carousel-control-prev-icon"
-                                                                    aria-hidden="true"></span>
-                                                                <span class="visually-hidden">Previous</span>
-                                                            </button>
-                                                            <button class="carousel-control-next" type="button"
-                                                                data-bs-target="#carouselExampleInterval"
-                                                                data-bs-slide="next">
-                                                                <span class="carousel-control-next-icon"
-                                                                    aria-hidden="true"></span>
-                                                                <span class="visually-hidden">Next</span>
-                                                            </button>
-                                                        </div>
+                                                    <img src="<?php echo $image['url']; ?>"
+                                                        class="d-block w-100 card-img-top" alt="...">
+                                                    <?php } ?>
+
+                                                    <div class="card-body">
                                                         <h5 class="card-title"><?php echo $row['product_name'] ?>
                                                         </h5>
                                                         <p class="card-text"><?php echo $row['product_desc'] ?>
@@ -327,17 +304,8 @@ if(isset($_POST['delete'])){
 
     <!-- jQuery -->
     <script src="plugins/jquery/jquery.min.js"></script>
-
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
-        integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous">
-    </script>
-
-
+    <!-- Bootstrap -->
+    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- Ekko Lightbox -->
     <script src="plugins/ekko-lightbox/ekko-lightbox.min.js"></script>
     <!-- AdminLTE App -->
@@ -354,22 +322,18 @@ if(isset($_POST['delete'])){
             $(this).ekkoLightbox({
                 alwaysShowClose: true
             });
-
         });
 
-        // if ($('.filter-container').length > 0) {
-        //     $('.filter-container').filterizr({
-        //         gutterPixels: 3
-        //     });
-        // }
-
-
+        $('.filter-container').filterizr({
+            gutterPixels: 3
+        });
         $('.btn[data-filter]').on('click', function() {
             $('.btn[data-filter]').removeClass('active');
             $(this).addClass('active');
         });
     })
     </script>
+
 </body>
 
 </html>

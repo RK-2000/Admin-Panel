@@ -28,14 +28,14 @@ $password = $_SESSION['password'];
 if(isset($_GET['product_id'])){
 $product_id = $_GET['product_id'];
 $product = mysqli_fetch_assoc(mysqli_query($con,"select * from product where product_id = '$product_id';"));
-mysqli_fetch_assoc(mysqli_query($con,"delete * from product where product_id = '$product_id';"));
+mysqli_query($con,"delete from product where product_id = '$product_id';");
 
 $product_name=$product['product_name'];
 $product_desc=$product['product_desc'];
 $product_cost=$product['product_cost'];
 $image=$product['image'];
 echo '<script type="text/javascript">
-preview_image()e;
+preview_image();
 </script>';
 }
 
@@ -57,39 +57,47 @@ if(isset($_POST['submit'])){
   $product_desc = $_POST['product-desc'];
   $product_cost = $_POST['product-cost'];
   $id = $_SESSION['id'];
-  if (!empty($_FILES['img']))
+  
+  $q = "insert into product (id,product_name,product_desc,product_cost) values ($id,'$product_name','$product_desc',$product_cost);";
+  
+  $query = mysqli_query($con,$q) or trigger_error($q,E_USER_ERROR);
+    if($query){
+        $product = mysqli_fetch_assoc(mysqli_query($con,"select * from product where product_name = '$product_name' and id = $id"));
+        
+        $product_id = $product['product_id'];
+        if (!empty($_FILES['img']))
         {
             $target_dir = 'uploads/';
-            $target_file = $target_dir . basename($_FILES["img"]["name"]);
-            $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
-            // if file is png, jpeg or jpg
-            if ($imageFileType == 'png' or $imageFileType == 'jpeg' or $imageFileType == 'jpg'){
-                if(move_uploaded_file($_FILES['img']['tmp_name'],$target_file)){
-                    $q = "insert into product (id,product_name,product_desc,product_cost,image) values ($id,'$product_name','$product_desc',$product_cost,'$target_file');";
-                    $query = mysqli_query($con,$q) or trigger_error($q,E_USER_ERROR);
-                    if($query){
-                        $_SESSION['message'] = "<div class='alert alert-success'>Product Added</div>";
-                        header('location:gallery.php');
+            $success=0;
+            foreach($_FILES['img']['name'] as $key => $val){
+                $target_file = $target_dir . basename($_FILES["img"]["name"][$key]);
+                $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
+                if ($imageFileType == 'png' or $imageFileType == 'jpeg' or $imageFileType == 'jpg'){
+                    if(move_uploaded_file($_FILES['img']['tmp_name'][$key],$target_file)){
+                        $q = "insert into images (product_id,url) values ($product_id,'$target_file');";
+                        $query = mysqli_query($con,$q) or trigger_error($q,E_USER_ERROR);
                     }
                     else{
-                        $_SESSION['message'] = "<div class='alert alert-danger'>Image can not be saved in database.</div>";
+                        $success=0;
+                        $_SESSION['message'] = "<div class='alert alert-danger'>Images were not added</div>";
                     }
                 }
                 else{
-                    $_SESSION['message'] = "<div class='alert alert-danger'>Cannot be uploaded</div>";
+                    $_SESSION['message'] = "<div class='alert alert-'>Please choose an image with proper extensions!</div>";    
                 }
             }
-            else{
-                $_SESSION['message'] = "<div class='alert alert-'>Please choose an image with proper extensions!</div>";    
-            }
-            
-            header("location:product-add.php");
+            header("location:gallery.php");       
         }
         else{
             $_SESSION['message'] = "<div class='alert alert-danger'>Please upload an image upload!</div>";
-            header("location:product-add.php");    
-
-        }    
+            header("location:product-add.php");
+            }
+    }  
+    else{
+        $_SESSION['message'] = "<div class='alert alert-danger'>Product was not added.</div>";
+        header('location:product-add.php');
+    }
+    
 }
 
 
@@ -210,6 +218,15 @@ if(isset($_POST['submit'])){
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="compose.php" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>
+                                    MailBox
+                                    <span class="right badge badge-danger">New</span>
+                                </p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -255,19 +272,23 @@ if(isset($_POST['submit'])){
                                 <div class="card-body">
                                     <div class="form-group">
                                         <label for="inputName">Project Name</label>
-                                        <input <?php if(isset($product_name)){?> value="<?php echo $product_name;  ?>" <?php } ?> type="text" id="inputName" class="form-control" name="product-name"
-                                            required>
+                                        <input <?php if(isset($product_name)){?> value="<?php echo $product_name;  ?>"
+                                            <?php } ?> type="text" id="inputName" class="form-control"
+                                            name="product-name" required>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputDescription">Project Description</label>
                                         <textarea id="inputDescription" class="form-control" rows="4"
-                                            name="product-desc" required><?php if(isset($product_desc)){ echo $product_desc; } ?></textarea>
+                                            name="product-desc"
+                                            required><?php if(isset($product_desc)){ echo $product_desc; } ?></textarea>
                                     </div>
                                     <div class="form-group">
                                         <label for="inputProjectLeader">Cost</label>
                                         <input type="number" id="inputCost" class="form-control" name="product-cost"
-                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)" <?php if(isset($product_cost)){?> value="<?php echo $product_cost;  ?>" <?php } ?> min=1
-                                            oninvalid="setCustomValidation('Cost cannot be negetive')" required>
+                                            pattern="(^\d*\.?\d*[1-9]+\d*$)|(^[1-9]+\d*\.\d*$)"
+                                            <?php if(isset($product_cost)){?> value="<?php echo $product_cost;  ?>"
+                                            <?php } ?> min=1 oninvalid="setCustomValidation('Cost cannot be negetive')"
+                                            required>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
@@ -287,8 +308,9 @@ if(isset($_POST['submit'])){
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group" id="x">
-                                        <input type="file" <?php if(isset($image)){?> value="<?php echo $image;  ?>" onload="preview_image()" <?php } ?>  name="img" id="uploadFile" class="form-control"
-                                            onchange="preview_image();"  multiple required>
+                                        <input type="file" <?php if(isset($image)){?> value="<?php echo $image;  ?>"
+                                            onload="preview_image()" <?php } ?> name="img[]" id="uploadFile"
+                                            class="form-control" onchange="preview_image();" multiple required>
                                     </div>
                                 </div>
                                 <!-- /.card-body -->
@@ -325,7 +347,11 @@ if(isset($_POST['submit'])){
     </div>
     <!-- ./wrapper -->
     <script>
-    function PreviewImage() {
+    function PreviewImage(e) {
+        if (e.files.length > 3) {
+            alert("Only 3 files accepted.");
+            e.preventDefault();
+        }
         var oFReader = new FileReader();
         oFReader.readAsDataURL(document.getElementById("uploadFile").files[0]);
         var div = document.getElementById("x");

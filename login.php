@@ -24,6 +24,8 @@
             $_SESSION['authenticated'] = "True";
             $_SESSION['email'] = $email;
             $_SESSION['password'] = $password;
+            $_SESSION['name'] = $result['name'];
+            
             $_SESSION['message']= "<div class='alert alert-primary'>Login Successful!</div>";
             header('Location:index.php');
         }

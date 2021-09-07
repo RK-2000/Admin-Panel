@@ -34,7 +34,7 @@ if ($_SESSION['authenticated']){
                 $_SESSION['authenticated'] = "True";
                 $_SESSION['email'] = $email;
                 $_SESSION['password'] = $password;
-                
+                $_SESSION['name'] = $name;
                 header("Location:index.php");
             }
         else{

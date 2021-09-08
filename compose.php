@@ -1,3 +1,66 @@
+<?php
+    session_start();
+
+    if (isset($_SESSION['message'])){
+        echo $_SESSION['message'];
+        unset($_SESSION['message']);
+    }
+
+    use PHPMailer\PHPMailer\PHPMailer;
+    use PHPMailer\PHPMailer\Exception;
+    use PHPMailer\PHPMailer\SMTP;
+
+    require 'vendor/phpmailer/phpmailer/src/Exception.php';
+    require 'vendor/phpmailer/phpmailer/src/PHPMailer.php';
+
+    require 'vendor/autoload.php';
+
+//Create an instance; passing `true` enables exceptions
+    $mail = new PHPMailer(true);
+
+if (isset($_POST['email'])){
+    $to = $_POST['to'];
+    $subject = $_POST['subject'];
+    $body = $_POST['body'];
+    try {
+        //Server settings
+        $mail->isSMTP();                                            //Send using SMTP
+        $mail->Host       = 'smtp.gmail.com';                     //Set the SMTP server to send through
+        $mail->SMTPAuth   = true;                                   //Enable SMTP authentication
+        $mail->Username   = 'pkpk120799@gmail.com';                     //SMTP username
+        $mail->Password   = 'Black@3047';                               //SMTP password
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;            //Enable implicit TLS encryption
+        $mail->Port       = 465;                                    //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
+    
+        //Recipients
+        $mail->setFrom('pkpk120799@gmail.com', 'Ritik Shrivastava');
+        $mail->addAddress($to);     //Add a recipient
+        
+        if(isset($_FILES['docs'])){
+            $mail->addAttachment($_FILES['docs']['tmp_name'],$_FILES['docs']['name']);        
+        }
+
+        //Attachments
+        //$mail->addAttachment('/var/tmp/file.tar.gz');         //Add attachments
+        //$mail->addAttachment('uploads/amazon echo.jpg');    //Optional name
+    
+        //Content
+        $mail->isHTML(true);                                  //Set email format to HTML
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+        
+    
+        $mail->send();
+        $_SESSION['message']= "<div class='alert alert-primary'>Email sent!</div>";
+        header('Location:compose.php');
+    } catch (Exception $e) {
+        echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
+        $_SESSION['message']= "<div class='alert alert-danger'>Something went wrong. Try again!</div>";
+        
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -45,9 +108,9 @@
         <!-- Main Sidebar Container -->
         <aside class="main-sidebar sidebar-dark-primary elevation-4">
             <!-- Brand Logo -->
-            <a href="../../index3.html" class="brand-link">
-                <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo"
-                    class="brand-image img-circle elevation-3" style="opacity: 0.8" />
+            <a href="index.php" class="brand-link">
+                <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    style="opacity: 0.8" />
                 <span class="brand-text font-weight-light">AdminLTE 3</span>
             </a>
 
@@ -56,7 +119,7 @@
                 <!-- Sidebar user (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
-                        <img src="../../dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image" />
+                        <img src="dist/img/user2-160x160.jpg" class="img-circle elevation-2" alt="User Image" />
                     </div>
                     <div class="info">
                         <a href="#" class="d-block">Alexander Pierce</a>
@@ -162,47 +225,49 @@
 
                         <!-- /.col -->
                         <div class="col-md-12">
-                            <div class="card card-primary card-outline">
-                                <div class="card-header">
-                                    <h3 class="card-title">Compose New Message</h3>
-                                </div>
-                                <!-- /.card-header -->
-                                <div class="card-body">
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="To:" />
+                            <form method="POST" enctype="multipart/form-data" name="email-form">
+                                <div class="card card-primary card-outline">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Compose New Message</h3>
                                     </div>
-                                    <div class="form-group">
-                                        <input class="form-control" placeholder="Subject:" />
-                                    </div>
-                                    <div class="form-group">
-                                        <textarea id="compose-textarea" class="form-control" style="height: 300px">
+                                    <!-- /.card-header -->
+
+                                    <div class="card-body">
+                                        <div class="form-group">
+                                            <input class="form-control" name="to" placeholder="To:" required />
+                                        </div>
+                                        <div class="form-group">
+                                            <input class="form-control" name="subject" placeholder="Subject:"
+                                                required />
+                                        </div>
+                                        <div class="form-group">
+                                            <textarea id="compose-textarea" class="form-control" name="body"
+                                                style="height: 300px" required>
 
                                         </textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <div class="btn btn-default btn-file">
-                                            <i class="fas fa-paperclip"></i> Attachment
-                                            <input type="file" name="attachment" />
                                         </div>
-                                        <p class="help-block">Max. 32MB</p>
+                                        <div class="form-group">
+                                            <div class="btn btn-default btn-file">
+                                                <i class="fas fa-paperclip"></i> Attachment
+                                                <input type="file" name="docs" />
+                                            </div>
+                                            <p class="help-block">Max. 32MB</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <!-- /.card-body -->
-                                <div class="card-footer">
-                                    <div class="float-right">
-                                        <button type="button" class="btn btn-default">
-                                            <i class="fas fa-pencil-alt"></i> Draft
-                                        </button>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="far fa-envelope"></i> Send
-                                        </button>
+
+                                    <!-- /.card-body -->
+                                    <div class="card-footer">
+                                        <div class="float-right">
+
+                                            <button type="submit" class="btn btn-primary" name="email">
+                                                <i class="far fa-envelope"></i> Send
+                                            </button>
+                                        </div>
+
                                     </div>
-                                    <button type="reset" class="btn btn-default">
-                                        <i class="fas fa-times"></i> Discard
-                                    </button>
+                                    <!-- /.card-footer -->
                                 </div>
-                                <!-- /.card-footer -->
-                            </div>
+                            </form>
                             <!-- /.card -->
                         </div>
                         <!-- /.col -->

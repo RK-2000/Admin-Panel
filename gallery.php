@@ -27,8 +27,25 @@ $email = $_SESSION['email'];
 $password = $_SESSION['password'];
 $id = $_SESSION['id'];
 
-$q = "select * from product where id='$id'";
+
+//pagination
+
+$results_per_page = 3;
 $result = mysqli_query($con,"select * from product where id='$id' ORDER BY product_id DESC;") or trigger_error(mysqli_error($con));
+$number_of_results=mysqli_num_rows($result);
+
+$number_of_page = ceil($number_of_results / $results_per_page);
+
+if(!isset($_GET['page']) or $_GET['page'] < 1 ){
+    $page = 1;
+}else{
+    $page = $_GET['page'];
+}
+
+$page_first_result = ($page-1) * $results_per_page; 
+$query = "select * from product where id='$id' ORDER BY product_id DESC LIMIT ".$page_first_result.",".$results_per_page;
+echo $query;
+$result = mysqli_query($con,$query);
 
 //Delete Product
 if(isset($_POST['delete'])){
@@ -64,7 +81,13 @@ if(isset($_POST['delete'])){
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
 
-
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
+        integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"
+        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous">
+    </script>
 
 </head>
 
@@ -176,6 +199,14 @@ if(isset($_POST['delete'])){
                                 </p>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a href="compose.php" class="nav-link">
+                                <i class="nav-icon fas fa-th"></i>
+                                <p>
+                                    MailBox
+                                </p>
+                            </a>
+                        </li>
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
@@ -211,63 +242,40 @@ if(isset($_POST['delete'])){
                                 <div class="card-header">
                                     <h4 class="card-title">Manage your products</h4>
                                 </div>
-                                <!-- start -->
-                                <div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-inner">
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                        <div class="carousel-item">
-                                            <img src="uploads/amazefit.jpg" class="d-block w-100">
-                                        </div>
-                                    </div>
-                                    <button class="carousel-control-prev" type="button"
-                                        data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button"
-                                        data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
-                                </div>
-                                <!-- start -->
                                 <div class="card-body">
                                     <div>
                                         <div class="filter-container p-0 row">
                                             <div class="card-columns">
-                                                <?php while($row = mysqli_fetch_array($result)){
+                                                <?php 
+                                                while($row = mysqli_fetch_array($result)){
                                                 ?>
                                                 <div class="card shadow-lg mx-1 " style="width: 18rem;">
                                                     <div class="card-body">
-                                                        <div id="carouselExampleInterval" class="carousel slide"
-                                                            data-bs-ride="carousel">
+                                                        <div id="carouselExampleControls<?php echo $row['product_id']; ?>"
+                                                            class="carousel slide" data-bs-ride="carousel">
                                                             <div class="carousel-inner">
-                                                                <?php $product_id = $row['product_id']; 
+                                                                <?php $var = 0;
+                                                                $product_id = $row['product_id']; 
                                                             $q = "select * from images where product_id='$product_id'";
                                                             $images = mysqli_query($con,$q) or trigger_error(mysqli_error($con));
                                                                 while($image = mysqli_fetch_array($images)){
                                                             ?>
-                                                                <div class="carousel-item active"
-                                                                    data-bs-interval="10000">
+                                                                <div
+                                                                    class="carousel-item <?php echo $var==0 ? 'active':''; ?>">
                                                                     <img src="<?php echo $image['url']; ?>"
                                                                         class="d-block w-100 card-img-top" alt="...">
                                                                 </div>
-                                                                <?php } ?>
+                                                                <?php $var++; } ?>
                                                             </div>
                                                             <button class="carousel-control-prev" type="button"
-                                                                data-bs-target="#carouselExampleInterval"
+                                                                data-bs-target="#carouselExampleControls<?php echo $row['product_id']; ?>"
                                                                 data-bs-slide="prev">
                                                                 <span class="carousel-control-prev-icon"
                                                                     aria-hidden="true"></span>
                                                                 <span class="visually-hidden">Previous</span>
                                                             </button>
                                                             <button class="carousel-control-next" type="button"
-                                                                data-bs-target="#carouselExampleInterval"
+                                                                data-bs-target="#carouselExampleControls<?php echo $row['product_id']; ?>"
                                                                 data-bs-slide="next">
                                                                 <span class="carousel-control-next-icon"
                                                                     aria-hidden="true"></span>
@@ -298,6 +306,30 @@ if(isset($_POST['delete'])){
 
                                             <?php } ?>
                                         </div>
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination">
+                                                <li class="page-item">
+                                                    <a class="page-link" href='gallery.php?page=<?php echo --$page; ?>'
+                                                        aria-label="Previous">
+                                                        <span aria-hidden="true">&laquo;</span>
+                                                        <span class="sr-only">Previous</span>
+                                                    </a>
+                                                </li>
+
+                                                <?php
+                                                for($page = 1; $page<= $number_of_page; $page++) {
+                                                echo '<li class="page-item"><a class="mx-1 page-link" href = "gallery.php?page=' . $page . '">' . $page . ' </a></l1>' ; 
+                                                }
+                                                ?>
+                                                <li class="page-item">
+                                                    <a class="page-link" href='gallery.php?page=<?php echo $page++; ?>'
+                                                        aria-label="Next">
+                                                        <span aria-hidden="true">&raquo;</span>
+                                                        <span class="sr-only">Next</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
 
                                     </div>
                                 </div>
@@ -326,16 +358,7 @@ if(isset($_POST['delete'])){
     <!-- ./wrapper -->
 
     <!-- jQuery -->
-    <script src="plugins/jquery/jquery.min.js"></script>
 
-
-
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"
-        integrity="sha384-eMNCOe7tC1doHpGoWe/6oMVemdAVTMs2xqW4mwXrXsW0L84Iytr2wi5v2QjrP/xp" crossorigin="anonymous">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.min.js"
-        integrity="sha384-cn7l7gDp0eyniUwwAZgrzD06kc/tftFf19TOAs2zVinnD/C7E91j9yyk5//jjpt/" crossorigin="anonymous">
-    </script>
 
 
     <!-- Ekko Lightbox -->
@@ -349,26 +372,24 @@ if(isset($_POST['delete'])){
     <!-- Page specific script -->
     <script>
     $(function() {
-        $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-            event.preventDefault();
-            $(this).ekkoLightbox({
-                alwaysShowClose: true
-            });
-
-        });
-
-        // if ($('.filter-container').length > 0) {
-        //     $('.filter-container').filterizr({
-        //         gutterPixels: 3
-        //     });
-        // }
+                $(document).on(' click', '[data-toggle="lightbox"]', function(event) {
+                    event.preventDefault();
+                    $(this).ekkoLightbox({
+                        alwaysShowClose: true
+                    });
+                }); // if
+                ($('.filter-container').length > 0) {
+                    // $('.filter-container').filterizr({
+                    // gutterPixels: 3
+                    // });
+                    // }
 
 
-        $('.btn[data-filter]').on('click', function() {
-            $('.btn[data-filter]').removeClass('active');
-            $(this).addClass('active');
-        });
-    })
+                    $('.btn[data-filter]').on('click', function() {
+                        $('.btn[data-filter]').removeClass('active');
+                        $(this).addClass('active');
+                    });
+                })
     </script>
 </body>
 

@@ -70,15 +70,17 @@ if(isset($_POST['submit'])){
             $target_dir = 'uploads/';
             $success=0;
             foreach($_FILES['img']['name'] as $key => $val){
+                
                 $target_file = $target_dir . basename($_FILES["img"]["name"][$key]);
                 $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
                 if ($imageFileType == 'png' or $imageFileType == 'jpeg' or $imageFileType == 'jpg'){
                     if(move_uploaded_file($_FILES['img']['tmp_name'][$key],$target_file)){
                         $q = "insert into images (product_id,url) values ($product_id,'$target_file');";
+                        
                         $query = mysqli_query($con,$q) or trigger_error($q,E_USER_ERROR);
                     }
                     else{
-                        $success=0;
+                        
                         $_SESSION['message'] = "<div class='alert alert-danger'>Images were not added</div>";
                     }
                 }
@@ -118,6 +120,7 @@ if(isset($_POST['submit'])){
     <link rel="stylesheet" href="plugins/fontawesome-free/css/all.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="dist/css/adminlte.min.css">
+    <script src="https://cdn.ckeditor.com/4.16.2/basic/ckeditor.js"></script>
 </head>
 
 <body class="hold-transition sidebar-mini">
@@ -277,9 +280,12 @@ if(isset($_POST['submit'])){
                                     </div>
                                     <div class="form-group">
                                         <label for="inputDescription">Project Description</label>
-                                        <textarea id="inputDescription" class="form-control" rows="4"
-                                            name="product-desc"
-                                            required><?php if(isset($product_desc)){ echo $product_desc; } ?></textarea>
+                                        <textarea id="editor" name="product-desc" required><?php if(isset($product_desc)){ echo $product_desc; } ?>
+                                        </textarea>
+                                        <script>
+                                        CKEDITOR.replace('product-desc'); // ID of element
+                                        </script>
+
                                     </div>
                                     <div class="form-group">
                                         <label for="inputProjectLeader">Cost</label>

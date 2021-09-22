@@ -44,7 +44,6 @@ if(!isset($_GET['page']) or $_GET['page'] < 1 ){
 
 $page_first_result = ($page-1) * $results_per_page; 
 $query = "select * from product where id='$id' ORDER BY product_id DESC LIMIT ".$page_first_result.",".$results_per_page;
-echo $query;
 $result = mysqli_query($con,$query);
 
 //Delete Product
@@ -282,9 +281,9 @@ if(isset($_POST['delete'])){
                                                                 <span class="visually-hidden">Next</span>
                                                             </button>
                                                         </div>
-                                                        <h5 class="card-title"><?php echo $row['product_name'] ?>
-                                                        </h5>
-                                                        <p class="card-text"><?php echo $row['product_desc'] ?>
+                                                        <h4 class="card-title"><?php echo $row['product_name'] ?>
+                                                        </h4>
+                                                        <p class="card-text small"><?php echo $row['product_desc'] ?>
                                                         </p>
                                                     </div>
                                                     <ul class="list-group list-group-flush">
@@ -300,6 +299,10 @@ if(isset($_POST['delete'])){
                                                                 href="product-add.php?product_id=<?php echo $row['product_id']; ?>">Update</a>
                                                             <button type="submit" class="card-link btn btn-danger"
                                                                 name="delete">Delete</button>
+                                                            </br>
+                                                            <a class="pt-4 small"
+                                                                href="invoice.php?product_id=<?php echo $row['product_id'] ?>">Generate
+                                                                invoice</a>
                                                     </form>
                                                 </div>
                                             </div>
@@ -370,27 +373,7 @@ if(isset($_POST['delete'])){
     <!-- AdminLTE for demo purposes -->
     <script src="dist/js/demo.js"></script>
     <!-- Page specific script -->
-    <script>
-    $(function() {
-                $(document).on(' click', '[data-toggle="lightbox"]', function(event) {
-                    event.preventDefault();
-                    $(this).ekkoLightbox({
-                        alwaysShowClose: true
-                    });
-                }); // if
-                ($('.filter-container').length > 0) {
-                    // $('.filter-container').filterizr({
-                    // gutterPixels: 3
-                    // });
-                    // }
 
-
-                    $('.btn[data-filter]').on('click', function() {
-                        $('.btn[data-filter]').removeClass('active');
-                        $(this).addClass('active');
-                    });
-                })
-    </script>
 </body>
 
 </html>
